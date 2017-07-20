@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Lottery</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="winner">
+  Winners: <span class="winner__new">...</span>
+  <button class="winner__btn">
+    New winner
+  </button>
+</div>
+<form>
+  <fieldset>
+    <p>Registration form</p>
+    <label>
+      *Name:<input id="inputName" type="text">
+    </label>
+    <br>
+    <label>
+      *Surname:<input id="inputSurname" type="text">
+    </label>
+    <br>
+    <label>
+      *Email:<input id="inputEmail" type="email">
+    </label>
+    <br>
+    <label>
+      Phone:<input id="inputPhone" type="tel">
+    </label>
+    <p class="alertText"></p>
+  </fieldset>
+  <input id="save-values" type="submit" value="Save">
+</form>
+<table id="table">
+  <tr>
+    <th>Name</th>
+    <th>Surname</th>
+    <th>Email</th>
+    <th>Phone</th>
+  </tr>
+</table>
+<script src="app.js"></script>
+</body>
+</html>
