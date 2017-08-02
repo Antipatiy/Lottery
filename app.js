@@ -1,6 +1,18 @@
 (function () {
-  
+
   "use strict";
+
+  var validator = {
+    inputName: false,
+    inputSurname: false,
+    inputEmail: false
+  };
+
+  var validatorRules = {
+    name: ['inputName', /^[a-zA-Z -]+$/, 'name'],
+    surname: ['inputSurname', /^[a-zA-Z -]+$/, 'surname'],
+    email: ['inputEmail', /^[-\w.]+@([A-z0-9][-A-z0-9]+\.)+[A-z]{2,4}$/, 'email']
+  };
 
   function Winner() {
     var table = document.querySelector('#table');
@@ -14,12 +26,7 @@
     var winnerButton = document.querySelector('.winner__btn');
     var newWinner = document.querySelector('.winner__new');
     var arrOfPersons = [];
-    var validator = Object.create(null);
     var that = this;
-
-    validator.inputName = false;
-    validator.inputSurname = false;
-    validator.inputEmail = false;
 
     that.isTrue = function (elem) {
       return elem === true;
@@ -35,16 +42,20 @@
       return booleanArr.every(that.isTrue);
     };
 
-    that.validateOnblur = function (elem, elemName, regExp, field) {
+    that.validateOnBlur = function (elemName, regExp, field, context) {
+      if (!context.value.toString().match(regExp)) {
+        alertText.textContent = 'Type correct ' + field;
+        context.focus();
+      }
+      else {
+        alertText.textContent = '';
+        validator[elemName] = true;
+      }
+    };
+
+    that.mountBlur = function (elem, elemName, regExp, field) {
       elem.addEventListener('blur', function () {
-        if (!this.value.toString().match(regExp)) {
-          alertText.textContent = 'Type correct ' + field;
-          this.focus();
-        }
-        else {
-          alertText.textContent = '';
-          validator[elemName] = true;
-        }
+        that.validateOnBlur(elemName, regExp, field, this);
       });
     };
 
@@ -83,7 +94,8 @@
       }
     };
 
-    that.setTableRow = function () {
+    that.setTableRow = function (event) {
+      event.preventDefault();
       if (that.checkValidator()) {
         that.addNewPerson();
         that.setTableElems();
@@ -95,10 +107,9 @@
       }
     };
 
-    that.saveValuesToArr = function () {
+    that.mountClickOnSaveButton = function () {
       saveValues.addEventListener('click', function (event) {
-        event.preventDefault();
-        that.setTableRow();
+        that.setTableRow(event);
       });
     };
 
@@ -117,23 +128,25 @@
     };
 
     that.getWinner = function () {
-      winnerButton.addEventListener('click', function () {
-        if (arrOfPersons.length === 0) {
-          return;
-        }
-        else {
-          var newWinner = that.randomInteger(0, that.getArrMax());
-          that.showWinner(arrOfPersons[newWinner][0] + ' ' + arrOfPersons[newWinner][1]);
-        }
-      });
+      if (arrOfPersons.length === 0) {
+        return;
+      }
+      else {
+        var newWinner = that.randomInteger(0, that.getArrMax());
+        that.showWinner(arrOfPersons[newWinner][0] + ' ' + arrOfPersons[newWinner][1]);
+      }
+    };
+
+    that.mountClickOnWinnerButton = function () {
+      winnerButton.addEventListener('click', that.getWinner);
     };
 
     that.init = function () {
-      that.validateOnblur(inputName, 'inputName', /^[a-zA-Z -]+$/, 'name');
-      that.validateOnblur(inputSurname, 'inputSurname', /^[a-zA-Z -]+$/, 'surname');
-      that.validateOnblur(inputEmail, 'inputEmail', /^[-\w.]+@([A-z0-9][-A-z0-9]+\.)+[A-z]{2,4}$/, 'email');
-      that.saveValuesToArr();
-      that.getWinner();
+      that.mountBlur(inputName, validatorRules.name[0], validatorRules.name[1], validatorRules.name[2]);
+      that.mountBlur(inputSurname, validatorRules.surname[0], validatorRules.surname[1], validatorRules.surname[2]);
+      that.mountBlur(inputEmail, validatorRules.email[0], validatorRules.email[1], validatorRules.email[2]);
+      that.mountClickOnSaveButton();
+      that.mountClickOnWinnerButton();
     }
   }
 
